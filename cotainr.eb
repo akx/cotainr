@@ -1,0 +1,21 @@
+easyblock = 'Tarball'
+
+name = 'cotainr'
+version = '0.1.0'
+homepage = 'https://github.com/DeiC-HPC/container-builder'
+description = 'software'
+
+sources = [ './cotainr-0.1.tar.gz' ]
+
+toolchain = SYSTEM
+
+dependencies = [
+    ('cray-python', EXTERNAL_MODULE),
+]
+
+sanity_check_paths = {
+    'files': ['bin/cotainr'],
+    'dirs': ['cotainr'],
+}
+
+sanity_check_commands = ['cotainr']
