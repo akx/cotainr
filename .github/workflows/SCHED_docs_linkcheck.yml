@@ -9,17 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
           cache: pip
-          cache-dependency-path: "**/docs-requirements.txt"
+          cache-dependency-path: |
+            **/pyproject.toml
+            **/doc/conf.py  # Make cache key depend on docs file to differentiate from test cache
       - name: Install docs dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install -r docs-requirements.txt
+          python3 -m pip install flit>=3.4
+          flit install --only-deps --extras=docs
       - name: Build documentation
         run: |
           make -C doc apidoc

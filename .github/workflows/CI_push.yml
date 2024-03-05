@@ -15,16 +15,19 @@ jobs:
         python-version: ["3.9", "3.11"]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: "**/test-requirements.txt"
+          cache-dependency-path: |
+            **/pyproject.toml
+            **/tests/__init__.py  # Make cache key depend on test file to differentiate from docs cache
       - name: Install test dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install -r test-requirements.txt
+          python3 -m pip install flit>=3.4
+          flit install --only-deps --extras=test
       - name: Run unittests via pytest
         run: pytest -vv -m "not endtoend and not singularity_integration and not conda_integration"

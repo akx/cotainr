@@ -24,9 +24,9 @@ jobs:
             singularity-version: "3.9.2"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Attempt to restore Singularity/Apptainer installer from cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-singularity-installer
         with:
           path: ./singularity_installer.deb
@@ -45,19 +45,22 @@ jobs:
           sudo apt install ./singularity_installer.deb
           singularity --version
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: "**/test-requirements.txt"
+          cache-dependency-path: |
+            **/pyproject.toml
+            **/tests/__init__.py  # Make cache key depend on test file to differentiate from docs cache
       - name: Install test dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install -r test-requirements.txt
+          python3 -m pip install flit>=3.4
+          flit install --only-deps --extras=test
       - name: Run test suite via pytest
         run: pytest -vv --junitxml=pytest_junit_out.xml
       - name: Archive the test results and coverage
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-and-coverage_python${{ matrix.python-version }}_${{ matrix.singularity-provider }}${{ matrix.singularity-version }}
           path: |

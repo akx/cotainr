@@ -1,0 +1,63 @@
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "cotainr"
+authors = [{name = "DeiC, deic.dk"}]
+readme = "README.md"
+dynamic = ["version", "description"]
+requires-python = ">=3.8"  # Synchronize this with _minimum_dependency_version in __init__.py
+maintainers = [
+    {name = "Christian Schou Oxvig"},
+    {name = "Eske Christiansen"}]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: European Union Public Licence 1.2 (EUPL 1.2)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",  # Synchronize this with _minimum_dependency_version in __init__.py and the CI setup
+    "Topic :: Scientific/Engineering",
+]
+keywords = ["container", "singularity", "apptainer"]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=6.0",
+    "pytest-cov>=2.10",
+]
+docs = [
+    "numpydoc>=1.5.0",
+    "pydata-sphinx-theme>=0.13.3",
+    "sphinx>=7.2.5",
+    "sphinx-design>=0.5.0",
+    "myst-parser>=2.0.0",
+]
+
+[project.urls]
+Documentation = "https://cotainr.readthedocs.io"
+Source = "https://github.com/DeiC-HPC/cotainr"
+Issues = "https://github.com/DeiC-HPC/cotainr/issues"
+
+[project.scripts]
+cotainr = "cotainr.cli:main"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -l --cov --cov-report=term-missing --cov-report=html"
+testpaths = ["cotainr/tests"]
+junit_suite_name = "cotainr_test_suite"
+markers = [
+    "conda_integration: marks tests of integration with conda/mamba",
+    "endtoend: marks end-to-end test cases",
+    "singularity_integration: marks tests of integration with singularity",
+]
+
+[tool.coverage.run]
+source = ["cotainr"]
+omit = ["cotainr/tests/*"]
+branch = true
