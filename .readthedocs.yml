@@ -7,9 +7,10 @@ build:
   tools:
     python: "3"
   jobs:
+    post_install:
+      - python3 -m pip install "flit>=3.4,<4"
+      - flit install --only-deps --deps=production --extras=docs
     pre_build:
-      - python3 -m pip install flit>=3.4
-      - flit install --only-deps --extras=docs
       - make -C doc apidoc
       - make -C doc relnotes
 sphinx:

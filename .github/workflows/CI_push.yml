@@ -27,6 +27,7 @@ jobs:
       - name: Install test dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install .[test]
+          python3 -m pip install "flit>=3.4,<4"
+          flit install --only-deps --deps=production --extras=test
       - name: Run unittests via pytest
         run: pytest -vv -m "not endtoend and not singularity_integration and not conda_integration"

@@ -55,8 +55,8 @@ jobs:
       - name: Install test dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install flit>=3.4
-          flit install --only-deps --extras=test
+          python3 -m pip install "flit>=3.4,<4"
+          flit install --only-deps --deps=production --extras=test
       - name: Run test suite via pytest
         run: pytest -vv --junitxml=pytest_junit_out.xml
       - name: Archive the test results and coverage
