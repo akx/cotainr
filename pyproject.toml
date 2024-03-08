@@ -44,7 +44,7 @@ Source = "https://github.com/DeiC-HPC/cotainr"
 Issues = "https://github.com/DeiC-HPC/cotainr/issues"
 
 [project.scripts]
-cotainr = "cotainr.cli:main"
+cotainr = "cotainr.cli:main"  # Create a /bin script for the cotainr CLI
 
 [tool.pytest.ini_options]
 minversion = "6.0"
