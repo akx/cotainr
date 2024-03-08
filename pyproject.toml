@@ -48,7 +48,7 @@ cotainr = "cotainr.cli:main"  # Create a /bin script for the cotainr CLI
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -l --cov --cov-report=term-missing --cov-report=html"
+addopts = "-ra -l --cov --cov-config=pyproject.toml --cov-report=term-missing --cov-report=html"
 testpaths = ["cotainr/tests"]
 junit_suite_name = "cotainr_test_suite"
 markers = [
