@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.11"]
+        python-version: ["3.9", "3.12"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,7 +23,7 @@ jobs:
           cache: pip
           cache-dependency-path: |
             **/pyproject.toml
-            **/tests/__init__.py  # Make cache key depend on test file to differentiate from docs cache
+            **/CI_push.yml
       - name: Install test dependencies
         run: |
           python3 -m pip install --upgrade pip

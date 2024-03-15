@@ -23,7 +23,7 @@ jobs:
           cache: pip
           cache-dependency-path: |
             **/pyproject.toml
-            **/doc/conf.py  # Make cache key depend on docs file to differentiate from test cache
+            **/SCHED_docs_linkcheck.yml
       - name: Install docs dependencies
         run: |
           python3 -m pip install --upgrade pip

@@ -10,13 +10,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set up Python 3.11
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: '3.x'
           cache: pip
           cache-dependency-path: |
             **/pyproject.toml
+            **/CD_testpypi.yml
       - name: Install test dependencies
         run: |
           python3 -m pip install --upgrade pip
@@ -37,7 +38,7 @@ jobs:
       name: testpypi
       url: https://test.pypi.org/p/cotainr
     permissions:
-      id-token: write  # IMPORTANT: mandatory for trusted publishing
+      id-token: write  # need for trusted publishing via OpenID Connect
     steps:
       - name: Download cotainr distribution packages
         uses: actions/download-artifact@v4
