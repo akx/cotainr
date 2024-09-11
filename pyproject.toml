@@ -83,6 +83,7 @@ lint.extend-select = [
     "B", # flake8-bugbear
     "E", # pycodestyle errors
     "F", # Pyflakes
+    "I", # import ordering
     "W", # pycodestyle warnings
 ]
 # https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
