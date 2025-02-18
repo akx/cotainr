@@ -24,6 +24,7 @@ import urllib.error
 import urllib.request
 
 from . import tracing
+from . import util
 
 logger = logging.getLogger(__name__)
 
@@ -254,6 +255,7 @@ class CondaInstall:
             )
             process.kill()  # We only use this process to extract the license
 
+        util._flush_stdin_buffer()
         if license_text:
             license_text = license_text.replace(
                 # remove prompt for pressing enter (as we have already done this...)
@@ -301,9 +303,7 @@ class CondaInstall:
         # Make up to 3 attempts at downloading the installer
         for retry in range(3):
             try:
-                with urllib.request.urlopen(
-                    miniforge_installer_url
-                ) as url:  # nosec B310
+                with urllib.request.urlopen(miniforge_installer_url) as url:  # nosec B310
                     installer_path.write_bytes(url.read())
 
                 break

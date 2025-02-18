@@ -6,6 +6,7 @@ Licensed under the European Union Public License (EUPL) 1.2
 - see the LICENSE file for details.
 
 """
+
 import itertools
 import logging
 import re
@@ -21,7 +22,7 @@ from .data import (
     data_cotainr_info_no_color_log_messages,
 )
 from .patches import (
-    patch_disable_cotainercli_init,
+    patch_disable_cotainrcli_init,
     patch_disables_cotainrcli_setup_cotainr_cli_logging,
 )
 from .stubs import StubValidSubcommand, StubInvalidSubcommand, StubLogSettingsSubcommand
@@ -60,7 +61,7 @@ class TestConstructor:
         with pytest.raises(SystemExit):
             CotainrCLI(args=[]).subcommand.execute()
         stdout = capsys.readouterr().out
-        assert stdout.startswith("usage: cotainr [-h]\n")
+        assert stdout.startswith("usage: cotainr [-h] [--version]\n")
         assert "subcommands:" not in stdout
 
     def test_setup_custom_cli_log_settings_logger(
@@ -111,10 +112,11 @@ class TestConstructor:
 class TestHelpMessage:
     cotainr_main_help_msg = (
         # Capsys apparently assumes an 80 char terminal (?) - thus extra '\n'
-        "usage: cotainr [-h] {{build,info}} ...\n\n"
+        "usage: cotainr [-h] [--version] {{build,info}} ...\n\n"
         "Build Apptainer/Singularity containers for HPC systems in user space.\n\n"
         "{argparse_options_line}"
-        "  -h, --help    show this help message and exit\n\n"
+        "  -h, --help    show this help message and exit\n"
+        "  --version     show program's version number and exit\n\n"
         "subcommands:\n  {{build,info}}\n"
         "    build       Build a container.\n"
         "    info        Obtain info about the state of all required dependencies for\n"
@@ -138,6 +140,16 @@ class TestHelpMessage:
         )
 
 
+class TestVersionMessage:
+    def test_main_version(self, capsys):
+        from cotainr import __version__ as _cotainr_version
+
+        with pytest.raises(SystemExit):
+            CotainrCLI(args=["--version"])
+        stdout = capsys.readouterr().out
+        assert stdout == f"cotainr {_cotainr_version}\n"
+
+
 class Test_SetupCotainrCLILogging:
     @pytest.mark.parametrize("verbosity", [-1, -2, -3, -5, -1000])
     def test_cotainr_critical_logging(
@@ -145,7 +157,7 @@ class Test_SetupCotainrCLILogging:
         verbosity,
         capsys,
         data_cotainr_critical_color_log_messages,
-        patch_disable_cotainercli_init,
+        patch_disable_cotainrcli_init,
     ):
         (
             log_level_msgs,
@@ -153,7 +165,7 @@ class Test_SetupCotainrCLILogging:
             stderr_msgs,
         ) = data_cotainr_critical_color_log_messages
 
-        # Setup the CotainerCLI logger
+        # Setup the CotainrCLI logger
         CotainrCLI()._setup_cotainr_cli_logging(
             log_settings=LogSettings(
                 verbosity=verbosity, log_file_path=None, no_color=False
@@ -176,7 +188,8 @@ class Test_SetupCotainrCLILogging:
             assert isinstance(handler, logging.StreamHandler)
 
         # Check correct logging, incl. message format, coloring, log level, and output stream
-        stdout, stderr = capsys.readouterr()  # readouterr clears its content when returning
+        # readouterr clears its content when returning
+        stdout, stderr = capsys.readouterr()
         assert stdout.rstrip("\n").split("\n") == stdout_msgs
         assert stderr.rstrip("\n").split("\n") == stderr_msgs
 
@@ -186,7 +199,7 @@ class Test_SetupCotainrCLILogging:
         verbosity,
         capsys,
         data_cotainr_debug_color_log_messages,
-        patch_disable_cotainercli_init,
+        patch_disable_cotainrcli_init,
     ):
         (
             log_level_msgs,
@@ -194,7 +207,7 @@ class Test_SetupCotainrCLILogging:
             expected_stderr_msgs,
         ) = data_cotainr_debug_color_log_messages
 
-        # Setup the CotainerCLI logger
+        # Setup the CotainrCLI logger
         CotainrCLI()._setup_cotainr_cli_logging(
             log_settings=LogSettings(
                 verbosity=verbosity, log_file_path=None, no_color=False
@@ -217,7 +230,8 @@ class Test_SetupCotainrCLILogging:
             assert isinstance(handler, logging.StreamHandler)
 
         # Check correct logging, incl. message format, coloring, log level, and output stream
-        stdout, stderr = capsys.readouterr()  # readouterr clears its content when returning
+        # readouterr clears its content when returning
+        stdout, stderr = capsys.readouterr()
         actual_stdout_msgs = stdout.rstrip("\n").split("\n")
         actual_stderr_msgs = stderr.rstrip("\n").split("\n")
         assert len(actual_stdout_msgs) == len(expected_stdout_msgs)
@@ -240,11 +254,11 @@ class Test_SetupCotainrCLILogging:
         verbosity,
         capsys,
         data_cotainr_info_color_log_messages,
-        patch_disable_cotainercli_init,
+        patch_disable_cotainrcli_init,
     ):
         log_level_msgs, stdout_msgs, stderr_msgs = data_cotainr_info_color_log_messages
 
-        # Setup the CotainerCLI logger
+        # Setup the CotainrCLI logger
         CotainrCLI()._setup_cotainr_cli_logging(
             log_settings=LogSettings(
                 verbosity=verbosity, log_file_path=None, no_color=False
@@ -267,7 +281,8 @@ class Test_SetupCotainrCLILogging:
             assert isinstance(handler, logging.StreamHandler)
 
         # Check correct logging, incl. message format, coloring, log level, and output stream
-        stdout, stderr = capsys.readouterr()  # readouterr clears its content when returning
+        # readouterr clears its content when returning
+        stdout, stderr = capsys.readouterr()
         assert stdout.rstrip("\n").split("\n") == stdout_msgs
         assert stderr.rstrip("\n").split("\n") == stderr_msgs
 
@@ -277,7 +292,7 @@ class Test_SetupCotainrCLILogging:
         no_color,
         tmp_path,
         data_cotainr_info_no_color_log_messages,
-        patch_disable_cotainercli_init,
+        patch_disable_cotainrcli_init,
     ):
         (
             log_level_msgs,
@@ -285,7 +300,7 @@ class Test_SetupCotainrCLILogging:
             stderr_msgs,
         ) = data_cotainr_info_no_color_log_messages
 
-        # Setup the CotainerCLI logger
+        # Setup the CotainrCLI logger
         log_file_path = tmp_path / "cotainr_log"
         CotainrCLI()._setup_cotainr_cli_logging(
             log_settings=LogSettings(
@@ -324,7 +339,7 @@ class Test_SetupCotainrCLILogging:
         self,
         capsys,
         data_cotainr_info_no_color_log_messages,
-        patch_disable_cotainercli_init,
+        patch_disable_cotainrcli_init,
     ):
         (
             log_level_msgs,
@@ -332,7 +347,7 @@ class Test_SetupCotainrCLILogging:
             stderr_msgs,
         ) = data_cotainr_info_no_color_log_messages
 
-        # Setup the CotainerCLI logger
+        # Setup the CotainrCLI logger
         CotainrCLI()._setup_cotainr_cli_logging(
             log_settings=LogSettings(verbosity=0, log_file_path=None, no_color=True)
         )
@@ -353,6 +368,7 @@ class Test_SetupCotainrCLILogging:
             assert isinstance(handler, logging.StreamHandler)
 
         # Check correct logging, incl. message format, coloring, log level, and output stream
-        stdout, stderr = capsys.readouterr()  # readouterr clears its content when returning
+        # readouterr clears its content when returning
+        stdout, stderr = capsys.readouterr()
         assert stdout.rstrip("\n").split("\n") == stdout_msgs
         assert stderr.rstrip("\n").split("\n") == stderr_msgs

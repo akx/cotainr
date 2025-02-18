@@ -43,7 +43,7 @@ from . import pack
 from . import tracing
 from . import util
 from . import _minimum_dependency_version as _min_dep_ver
-
+from . import __version__ as _cotainr_version
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
 class CotainrSubcommand(ABC):
     """Abstract base class for `CotainrCLI` subcommands."""
 
-    @classmethod
+    @classmethod  # noqa: B027
     def add_arguments(cls, *, parser):
         """
         Add command line arguments to arguments `parser`.
@@ -238,6 +238,7 @@ class Build(CotainrSubcommand):
                     conda_install.add_environment(
                         path=conda_env_file, name=conda_env_name
                     )
+
                     sandbox.add_to_env(shell_script=f"conda activate {conda_env_name}")
 
                     # Clean-up unused files
@@ -458,6 +459,9 @@ class CotainrCLI:
         builder_cli_doc_summary = self.__doc__.strip().splitlines()[0]
         parser = argparse.ArgumentParser(
             prog="cotainr", description=builder_cli_doc_summary
+        )
+        parser.add_argument(
+            "--version", action="version", version=f"%(prog)s {_cotainr_version}"
         )
 
         # Add subcommands parsers
